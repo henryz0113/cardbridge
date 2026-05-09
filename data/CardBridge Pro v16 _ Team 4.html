@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:5003/ -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>CardBridge Pro v16 | Team 4</title>
+    <link rel="stylesheet" href="./CardBridge Pro v16 _ Team 4_files/all.min.css">
+    <style>
+        :root { --ios-blue: #0a84ff; --ios-red: #ff453a; --ios-green: #32d74b; }
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .iphone { width: 375px; height: 812px; background: #000; border-radius: 50px; border: 8px solid #3a3a3c; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        
+        .overlay { position: absolute; bottom: -100%; left: 0; width: 100%; height: 55%; background: #1c1c1e; border-radius: 30px 30px 0 0; transition: 0.5s; padding: 30px; box-sizing: border-box; z-index: 9000; border-top: 1px solid #3a3a3c; pointer-events: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+        .overlay.active { bottom: 85px; pointer-events: auto; } 
+
+        #adPopup { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 320px; background: #1c1c1e; border-radius: 30px; padding: 30px; border: 1px solid var(--ios-blue); z-index: 9600; display: none; opacity: 0; transition: 0.4s; }
+        #adPopup.active { transform: translate(-50%, -50%) scale(1); opacity: 1; display: block; }
+        
+        #onboarding { position: absolute; inset: 0; background: #000; z-index: 9500; padding: 60px 30px; display: flex; flex-direction: column; transition: 0.6s; }
+        .btn-setup, .btn-ad-go { background: var(--ios-blue); color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 700; cursor: pointer; }
+        .btn-ad-later, .btn-confirm { background: #2c2c2e; color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+
+        .tab-content { display: none; height: 100%; padding: 0 20px 100px; box-sizing: border-box; overflow-y: auto; }
+        .tab-content.active { display: block; }
+        .header { padding: 40px 15px 10px; display: flex; justify-content: space-between; align-items: center; }
+
+        .map-section { 
+            background: #1c1c1e; 
+            border-radius: 24px; 
+            margin-bottom: 15px; 
+            border: 1px solid #2c2c2e; 
+            height: 180px; 
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .map-pin {
+            position: absolute;
+            z-index: 2;
+            color: var(--ios-red);
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transform: translateY(-10px);
+        }
+
+        #displayLoc {
+            position: absolute;
+            bottom: 15px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 3;
+        }
+
+        .selector-container { position: relative; z-index: 5000; }
+        select { width: 100%; background: #1c1c1e; border: 1px solid #3a3a3c; padding: 15px; border-radius: 12px; color: #fff; }
+
+        .card-stack { position: relative; height: 320px; z-index: 10; margin-top: 10px; }
+        .card { width: 100%; height: 200px; border-radius: 20px; padding: 25px; box-sizing: border-box; position: absolute; transition: transform 0.3s ease, opacity 0.5s, top 0.5s; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        
+        /* [추가] 마우스 호버 시 살짝 위로 올라가는 효과 */
+        .card:hover {
+            transform: translateY(-15px);
+            z-index: 100 !important;
+        }
+
+        .stat-card { background: #1c1c1e; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2c2c2e; cursor: pointer; }
+        .nav { position: absolute; bottom: 0; width: 100%; height: 85px; background: rgba(28,28,30,0.95); display: flex; justify-content: space-around; padding-top: 10px; border-top: 0.5px solid #3a3a3c; z-index: 8500; }
+        .nav-item { text-align: center; color: #8e8e93; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--ios-blue); }
+    </style>
+</head>
+<body>
+    <div class="iphone">
+        <div id="onboarding">
+            <h2 style="font-size:34px;">CardBridge<br><span style="color:var(--ios-blue)">Wallet 설정</span></h2>
+            <div style="margin:40px 0;">
+                <label style="color:#8e8e93; font-size:14px;">연령대 선택</label>
+                <select id="userAge" style="margin-top:10px;">
+                    <option value="10">10대</option><option value="20">20대</option><option value="30" selected="">30대</option><option value="40">40대</option>
+                </select>
+                <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:14px; font-weight:600;">스페셜 구독 (월 4,900원 구독)</span>
+                    <input type="checkbox" id="premiumToggle" checked="" style="width:20px; height:20px;">
+                </div>
+            </div>
+            <button class="btn-setup" onclick="finishOnboarding()" style="margin-top:auto;">Wallet 시작하기</button>
+        </div>
+
+        <div id="adPopup">
+            <div style="font-size:12px; font-weight:700; color:var(--ios-blue); margin-bottom:10px;">💡 스마트 교체 제안</div>
+            <div id="adCardName" style="font-size:20px; font-weight:bold; margin-bottom:10px;"></div>
+            <p id="adCardDesc" style="font-size:13px; color:#8e8e93; line-height:1.6; margin-bottom:20px;"></p>
+            <button class="btn-ad-go" onclick="goToOfficialSite()">안내하기</button>
+            <button class="btn-ad-later" onclick="closeAd()">나중에 하기</button>
+        </div>
+
+        <div id="wallet" class="tab-content active">
+            <div class="header"><h1>지갑</h1><i class="fas fa-plus-circle" style="font-size:24px; color:#3a3a3c;"></i></div>
+            
+            <div class="map-section" id="mapView">
+                <i class="fas fa-location-dot map-pin"></i>
+                <div id="displayLoc">위치를 선택하세요</div>
+            </div>
+
+            <div class="selector-container">
+                <select id="mSelect" onchange="updateLoc()">
+                    <option value="S1">스타벅스 금호역점 (Cafe)</option><option value="S2">맥도날드 한남점 (Food)</option><option value="S3">SK에너지 강남주유소 (Gas)</option><option value="S4">루이비통 메종 서울 (Shopping)</option><option value="S5">GS25 카이스트점 (CV)</option><option value="S6">강남 세브란스 병원 (Hospital)</option><option value="S7">아웃백 스테이크하우스 (Food)</option><option value="S8">현대오일뱅크 신사 (Gas)</option><option value="S9">신세계백화점 본점 (Shopping)</option><option value="S10">남서울 CC (Golf)</option>
+                </select>
+            </div>
+            <div class="card-stack">
+                
+                <div class="card" id="card-C1" onclick="showCardBenefits(&#39;C1&#39;)" style="background: #0046FF; top: 0px; z-index: 1;">
+                    <div style="display:flex; justify-content:space-between; font-weight:800; font-style:italic;">
+                        <span>Shinhan</span><i class="fas fa-gem"></i>
+                    </div>
+                    <div style="margin-top:100px; font-weight:600;">Deep Dream</div>
+                </div>
+                
+                <div class="card" id="card-C2" onclick="showCardBenefits(&#39;C2&#39;)" style="background: #FFBC00; top: 35px; z-index: 2;">
+                    <div style="display:flex; justify-content:space-between; font-weight:800; font-style:italic;">
+                        <span>KB</span><i class="fas fa-bolt"></i>
+                    </div>
+                    <div style="margin-top:100px; font-weight:600;">FinTech Special</div>
+                </div>
+                
+                <div class="card" id="card-C3" onclick="showCardBenefits(&#39;C3&#39;)" style="background: #007AFF; top: 70px; z-index: 3;">
+                    <div style="display:flex; justify-content:space-between; font-weight:800; font-style:italic;">
+                        <span>Samsung</span><i class="fas fa-gas-pump"></i>
+                    </div>
+                    <div style="margin-top:100px; font-weight:600;">iD PETROL</div>
+                </div>
+                
+                <div class="card" id="card-C4" onclick="showCardBenefits(&#39;C4&#39;)" style="background: #1A1A1A; top: 105px; z-index: 4;">
+                    <div style="display:flex; justify-content:space-between; font-weight:800; font-style:italic;">
+                        <span>Hyundai</span><i class="fas fa-crown"></i>
+                    </div>
+                    <div style="margin-top:100px; font-weight:600;">Zero Gold</div>
+                </div>
+                
+            </div>
+            <button onclick="recommend()" style="background:#fff; color:#000; border:none; width:100%; padding:20px; border-radius:18px; font-weight:700; font-size:17px; cursor:pointer; margin-top:20px; position:relative; z-index:4500;">Optimize Benefits</button>
+        </div>
+
+        <div id="report" class="tab-content">
+            <div class="header"><h1>Insights</h1></div>
+            <div class="stat-card" onclick="triggerLimitPopup()">
+                <div style="font-size:13px; color:#8e8e93; margin-bottom:8px;">실시간 한도 알림</div>
+                <div style="font-size:24px; font-weight:700; color:var(--ios-red);">신한카드 한도 충족 98%</div>
+            </div>
+            <div class="stat-card" onclick="triggerPruningPopup()">
+                <div style="font-size:13px; color:#8e8e93; margin-bottom:8px;">카드 자산 최적화</div>
+                <div style="font-size:24px; font-weight:700; color:var(--ios-green);">미사용 카드 정리 제안</div>
+            </div>
+            <div class="stat-card" onclick="triggerStatsPopup()">
+                <div style="font-size:13px; color:#8e8e93; margin-bottom:8px;">2026년 누적 혜택 가치</div>
+                <div style="font-size:24px; font-weight:700; color:var(--ios-blue);">₩425,000</div>
+            </div>
+            <div class="stat-card" style="border: 1px solid var(--ios-blue); background: rgba(10,132,255,0.05);" onclick="triggerAgeBridgePopup()">
+                <div id="ageStrategyTitle" style="font-size:18px; font-weight:700;"></div>
+                <p style="font-size:12px; color:#8e8e93; margin-top:8px;">클릭 시 다음 10년을 위한 카드 추천</p>
+            </div>
+        </div>
+
+        <div class="overlay" id="ovl">
+            <div style="width:40px; height:5px; background:#3a3a3c; border-radius:5px; margin:0 auto 15px;"></div>
+            <h2 id="ovlHeader" style="color:var(--ios-blue); margin:0; font-size:22px;">Result</h2>
+            <p id="ovlDesc" style="color:#8e8e93; font-size:13px; margin:8px 0 15px;"></p>
+            <div id="ovlVisual" style="padding:25px; border-radius:18px; font-weight:bold; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                <div id="ovlName" style="font-size:18px;"></div>
+                <div id="ovlRate" style="font-size:28px; margin-top:10px;"></div>
+                <div id="premiumArea" style="margin-top:15px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.2); font-size:13px; display:none;"></div>
+            </div>
+            <button class="btn-confirm" onclick="closeOvl()">확인</button>
+        </div>
+
+        <div class="nav">
+            <div class="nav-item active" id="navWallet" onclick="switchTab(&#39;wallet&#39;, this)"><i class="fas fa-wallet"></i>지갑</div>
+            <div class="nav-item" id="navReport" onclick="switchTab(&#39;report&#39;, this)"><i class="fas fa-chart-bar"></i>인사이트</div>
+        </div>
+    </div>
+
+    <script>
+        const MY_CARDS_DATA = [{"benefits": {"Food": 0.115, "Gas": 0.038, "Hospital": 0.066}, "color": "#0046FF", "company": "Shinhan", "id": "C1", "logo": "fa-gem", "name": "Deep Dream"}, {"benefits": {"CV": 0.074, "Gas": 0.097, "Hospital": 0.143, "Shopping": 0.147}, "color": "#FFBC00", "company": "KB", "id": "C2", "logo": "fa-bolt", "name": "FinTech Special"}, {"benefits": {"CV": 0.057, "Cafe": 0.071, "Golf": 0.063}, "color": "#007AFF", "company": "Samsung", "id": "C3", "logo": "fa-gas-pump", "name": "iD PETROL"}, {"benefits": {"CV": 0.071, "Food": 0.046, "Gas": 0.1, "Golf": 0.025}, "color": "#1A1A1A", "company": "Hyundai", "id": "C4", "logo": "fa-crown", "name": "Zero Gold"}];
+        const MERCHANTS_DATA = [{"category": "Cafe", "id": "S1", "lat": 37.548, "lng": 127.023, "name": "\uc2a4\ud0c0\ubc85\uc2a4 \uae08\ud638\uc5ed\uc810"}, {"category": "Food", "id": "S2", "lat": 37.534, "lng": 127.009, "name": "\ub9e5\ub3c4\ub0a0\ub4dc \ud55c\ub0a8\uc810"}, {"category": "Gas", "id": "S3", "lat": 37.525, "lng": 127.039, "name": "SK\uc5d0\ub108\uc9c0 \uac15\ub0a8\uc8fc\uc720\uc18c"}, {"category": "Shopping", "id": "S4", "lat": 37.525, "lng": 127.042, "name": "\ub8e8\uc774\ube44\ud1b5 \uba54\uc885 \uc11c\uc6b8"}, {"category": "CV", "id": "S5", "lat": 37.592, "lng": 127.046, "name": "GS25 \uce74\uc774\uc2a4\ud2b8\uc810"}, {"category": "Hospital", "id": "S6", "lat": 37.492, "lng": 127.046, "name": "\uac15\ub0a8 \uc138\ube0c\ub780\uc2a4 \ubcd1\uc6d0"}, {"category": "Food", "id": "S7", "lat": 37.517, "lng": 127.04, "name": "\uc544\uc6c3\ubc31 \uc2a4\ud14c\uc774\ud06c\ud558\uc6b0\uc2a4"}, {"category": "Gas", "id": "S8", "lat": 37.521, "lng": 127.022, "name": "\ud604\ub300\uc624\uc77c\ubc45\ud06c \uc2e0\uc0ac"}, {"category": "Shopping", "id": "S9", "lat": 37.56, "lng": 126.981, "name": "\uc2e0\uc138\uacc4\ubc31\ud654\uc810 \ubcf8\uc810"}, {"category": "Golf", "id": "S10", "lat": 37.378, "lng": 127.098, "name": "\ub0a8\uc11c\uc6b8 CC"}];
+        let currentAge = "30"; 
+        let currentAdUrl = "";
+        let isPremium = false;
+
+        function updateLoc() {
+            const mID = document.getElementById('mSelect').value;
+            const merchant = MERCHANTS_DATA.find(m => m.id === mID);
+            const mapView = document.getElementById('mapView');
+            const displayLoc = document.getElementById('displayLoc');
+            
+            displayLoc.innerText = merchant.name;
+            const mapUrl = `https://static-maps.yandex.ru/1.x/?lang=en_US&ll=${merchant.lng},${merchant.lat}&z=16&l=map&size=450,200`;
+            mapView.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${mapUrl}')`;
+        }
+
+        function showCardBenefits(cardId) {
+            const card = MY_CARDS_DATA.find(c => c.id === cardId);
+            const ovl = document.getElementById('ovl');
+            document.getElementById('premiumArea').style.display = 'none'; 
+            
+            document.getElementById('ovlHeader').innerText = card.name + " 혜택";
+            document.getElementById('ovlDesc').innerText = card.company + " 카드의 주요 적립 분야입니다.";
+            
+            let benefitList = '<div style="display:grid; gap:8px;">';
+            for (const [cat, rate] of Object.entries(card.benefits)) {
+                benefitList += `
+                    <div style="display:flex; justify-content:space-between; background:rgba(255,255,255,0.1); padding:8px 12px; border-radius:10px;">
+                        <span>${cat}</span><span>${(rate * 100).toFixed(1)}%</span>
+                    </div>`;
+            }
+            benefitList += '</div>';
+            
+            document.getElementById('ovlVisual').style.background = card.color;
+            document.getElementById('ovlName').innerHTML = benefitList;
+            document.getElementById('ovlRate').innerText = ""; 
+            ovl.classList.add('active');
+        }
+
+        function finishOnboarding() {
+            currentAge = document.getElementById('userAge').value;
+            isPremium = document.getElementById('premiumToggle').checked;
+            document.getElementById('ageStrategyTitle').innerText = currentAge + "대 생애주기 전략";
+            document.getElementById('navReport').style.display = isPremium ? 'block' : 'none';
+            document.getElementById('onboarding').style.transform = 'translateY(-100%)';
+            if(isPremium) {
+                fetch(`/get-random-ad`).then(res => res.json()).then(data => {
+                    document.getElementById('adCardName').innerText = data.name + " 추천";
+                    document.getElementById('adCardDesc').innerText = data.desc;
+                    currentAdUrl = data.url;
+                    setTimeout(() => { document.getElementById('adPopup').classList.add('active'); }, 800);
+                });
+            }
+            updateLoc();
+        }
+
+        function goToOfficialSite() { window.open(currentAdUrl, '_blank'); }
+        function closeAd() { document.getElementById('adPopup').classList.remove('active'); }
+
+        async function recommend() {
+            const mID = document.getElementById('mSelect').value;
+            const res = await fetch(`/api/recommend?mID=${mID}`);
+            const data = await res.json();
+            
+            document.querySelectorAll('.card').forEach(c => { c.style.transform = 'none'; c.style.opacity = '0.3'; });
+            document.getElementById('ovl').classList.add('active');
+            document.getElementById('ovlHeader').innerText = "Best Matching";
+            document.getElementById('ovlDesc').innerText = `${data.category} 업종 최적 혜택 결과입니다.`;
+            document.getElementById('ovlVisual').style.background = data.best.color;
+            document.getElementById('ovlName').innerText = data.best.name;
+            document.getElementById('ovlRate').innerText = (data.best.rate * 100).toFixed(1) + "% Reward";
+
+            const pArea = document.getElementById('premiumArea');
+            if (isPremium && data.second) {
+                pArea.innerHTML = `<span style="color:#32d74b; font-weight:800;"></span> 차순위: ${data.second.name} (${(data.second.rate * 100).toFixed(1)}%)`;
+                pArea.style.display = 'block';
+            } else {
+                pArea.style.display = 'none';
+            }
+
+            const best = document.getElementById('card-' + data.best.id);
+            if(best) { 
+                best.style.transform = 'translateY(-50px) scale(1.05)'; 
+                best.style.zIndex = '4000'; 
+                best.style.opacity = '1'; 
+            }
+        }
+
+        function triggerStatsPopup() {
+            const ovl = document.getElementById('ovl');
+            document.getElementById('premiumArea').style.display = 'none';
+            document.getElementById('ovlHeader').innerText = "Benefit Analysis";
+            document.getElementById('ovlDesc').innerText = "서비스 가치 증명 결과입니다.";
+            document.getElementById('ovlVisual').style.background = "#2c2c2e";
+            document.getElementById('ovlName').innerHTML = `<span style="color:var(--ios-red);">1. 서비스 미사용 시 손실: ₩354,000</span><br><span style="color:#8e8e93;">2. 전년(2025) 누적 혜택: ₩380,000</span>`;
+            document.getElementById('ovlRate').innerText = "+11.8% 보전";
+            ovl.classList.add('active');
+        }
+
+        function triggerAgeBridgePopup() {
+            const ovl = document.getElementById('ovl');
+            document.getElementById('premiumArea').style.display = 'none';
+            const nextAge = parseInt(currentAge) + 10;
+            const recs = {
+                "10": {name: "신한 더모어 (20대용)", desc: "대학생활 카페/배달 최적화", rate: "15% Point", color: "#0046FF"},
+                "20": {name: "KB 탄탄대로 (30대용)", desc: "사회초년생 주거비 절감", rate: "10% Living", color: "#FFBC00"},
+                "30": {name: "삼성 iD PETROL (40대용)", desc: "가족 단위 의료/교육/주유 특화", rate: "15% Reward", color: "#007AFF"},
+                "40": {name: "NH 올바른 (50대용)", desc: "실버 라이프 케어 및 건강 관리", rate: "5% Health", color: "#10b981"}
+            };
+            const item = recs[currentAge] || recs["30"];
+            document.getElementById('ovlHeader').innerText = `${nextAge}대 대비 카드`;
+            document.getElementById('ovlDesc').innerText = item.desc;
+            document.getElementById('ovlVisual').style.background = item.color;
+            document.getElementById('ovlName').innerText = item.name;
+            document.getElementById('ovlRate').innerText = item.rate;
+            ovl.classList.add('active');
+        }
+
+        function triggerLimitPopup() {
+            const ovl = document.getElementById('ovl');
+            document.getElementById('premiumArea').style.display = 'none';
+            document.getElementById('ovlHeader').innerText = "한도 우회 제안";
+            document.getElementById('ovlDesc').innerText = "신한카드의 이번 달 한도가 98% 도달했습니다. 다음 결제부터는 삼성 iD 카드를 사용하여 혜택 중단을 방지하세요.";
+            document.getElementById('ovlVisual').style.background = "#007AFF";
+            document.getElementById('ovlName').innerText = "삼성 iD PETROL (대체)";
+            document.getElementById('ovlRate').innerText = "15% 유지";
+            ovl.classList.add('active');
+        }
+
+        function triggerPruningPopup() {
+            const ovl = document.getElementById('ovl');
+            document.getElementById('premiumArea').style.display = 'none';
+            document.getElementById('ovlHeader').innerText = "자산 최적화 알림";
+            document.getElementById('ovlDesc').innerText = "최근 사용 실적이 없는 현대 Zero카드를 해지하거나, 혜택이 더 높은 신규 카드로 교체하시겠습니까?";
+            document.getElementById('ovlVisual').style.background = "#1A1A1A";
+            document.getElementById('ovlName').innerText = "Hyundai Zero (미사용)";
+            document.getElementById('ovlRate').innerText = "Pruning Target";
+            ovl.classList.add('active');
+        }
+
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function closeOvl() {
+            document.getElementById('ovl').classList.remove('active');
+            document.querySelectorAll('.card').forEach((c, i) => { 
+                c.style.transform = 'none'; 
+                c.style.opacity = '1'; 
+                c.style.zIndex = i + 1; 
+            });
+        }
+    </script>
+
+</body></html>
