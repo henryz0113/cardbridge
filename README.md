@@ -1,6 +1,5 @@
 # CardBridge (CardBridge Pro)
-> **AI 핀테크 기반 VVIP 실시간 카드 추천 및 소비 취향 소셜 매칭 플랫폼** > KAIST 비즈니스 애널리틱스와 데이터 마이닝 (Business Analytics & Data Mining) Final Pitch
-
+> **AI 핀테크 기반 VVIP 실시간 카드 추천 및 소비 취향 소셜 매칭 플랫폼** > 
 ---
 
 ## 1. 프로젝트 개요 (Project Executive Summary)
