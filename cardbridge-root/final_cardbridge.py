@@ -26,7 +26,7 @@ def get_db_connection():
             host='localhost',
             port=3306,
             user='root',
-            password='Oframe06a!@',
+            password='$KEY',
             database='cardbridge_db'
         )
     except mysql.connector.Error as err:
@@ -132,7 +132,7 @@ DOMESTIC_MCC_MAP = {
 }
 
 CATEGORIES = ["Cafe", "Food", "Gas", "Shopping", "CV", "Hospital", "Golf"]
-API_KEY = "AIzaSyD1tnhxQKa4QWvNBmr_PeKQUGQ5KFk0vVs"
+API_KEY = "$API_KEY"
 MODEL_NAME = "gemini-2.5-flash-lite" 
 
 KOREAN_NAMES = ["김철수", "이영희", "박지민", "최유진", "정민호", "한소라", "강태윤", "윤서연"]
