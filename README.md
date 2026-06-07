@@ -35,5 +35,5 @@
  ├── 📜 DB-CARD.sql                        # 가맹점 마스터(20 rows) 및 카드 마스터(16 rows) 초기 시드 스크립트
  ├── 📜 alert-card.sql                     # 실적 한도 기준액(performance_limit) 및 MCC 표준 코드 보강 쿼리
  ├── 📜 matching_user.sql                  # VVIP 그룹A(실명) & 그룹B(익명) 8대8 대칭 자산 통합 테이블 생성 쿼리
- ├── 🐍 final_cardbridge2.py               # Flask 기반 웹 애플리케이션 프로토타입 소스 코드 (Core Logic)
- └── 🐍 full-ai-cardbridge.py              # LLM(Gemini) 프롬프트 템플릿 및 매칭 에이전트 자동화 풀 버전# cardbridge
+ ├── 💾 final_cardbridge2.py               # Flask 기반 웹 애플리케이션 프로토타입 소스 코드 (Core Logic)
+ └── 💾 full-ai-cardbridge.py              # LLM(Gemini) 프롬프트 템플릿 및 매칭 에이전트 자동화 풀 버전# cardbridge
