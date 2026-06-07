@@ -31,7 +31,7 @@
 
 ```text
 📂 cardbridge-root
- ├── 📄 T4_데이터마이닝_Cardbridge.pdf           # 비즈니스 전략 및 UI 템플릿 최종 Pitch Deck
+ ├── 📄 T4_데이터마이닝_Cardbridge.pdf         # 비즈니스 전략 및 UI 템플릿 최종 Pitch Deck
  ├── 📜 DB-CARD.sql                        # 가맹점 마스터(20 rows) 및 카드 마스터(16 rows) 초기 시드 스크립트
  ├── 📜 alert-card.sql                     # 실적 한도 기준액(performance_limit) 및 MCC 표준 코드 보강 쿼리
  ├── 📜 matching_user.sql                  # VVIP 그룹A(실명) & 그룹B(익명) 8대8 대칭 자산 통합 테이블 생성 쿼리
